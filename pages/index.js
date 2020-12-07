@@ -18,6 +18,7 @@ export default function Home(props) {
         </h1>
         <p>{ props.name }</p>
         <p>{ props.symbol }</p>
+        <p>{ props.totalSupply }</p>
       </main>
     </div>
   )
@@ -39,10 +40,11 @@ export async function getServerSideProps(context) {
   const provider = new ethers.providers.getDefaultProvider('http://localhost:8545')
   const blocks = await provider.getBlockNumber()
 
-  const address = '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9'
+  const address = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
   const ABI = [
     'function name() view returns (string)',
     'function symbol() view returns (string)',
+    'function totalSupply() view returns (uint256)',
 
     'function balanceOf(address) view returns (uint)',
 
@@ -53,13 +55,15 @@ export async function getServerSideProps(context) {
   const contract = new ethers.Contract(address, ABI, provider)
   const name = await contract.name()
   const symbol = await contract.symbol()
+  const totalSupply = ethers.BigNumber.from(await contract.totalSupply()).toNumber()
 
   return {
     props: {
       network,
       blocks,
       name,
-      symbol
+      symbol,
+      totalSupply,
     }
   }
 }
