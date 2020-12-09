@@ -2,6 +2,7 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 //import { ChainId, Token, Fetcher } from '@uniswap/sdk'
 import { ethers } from 'ethers'
+import IUniswapV2Factory from '@uniswap/v2-core/build/IUniswapV2Factory.json'
 
 
 export default function Home(props) {
@@ -19,12 +20,21 @@ export default function Home(props) {
         <p>{ props.name }</p>
         <p>{ props.symbol }</p>
         <p>{ props.totalSupply }</p>
+        <h2>Uniswap pairs: { props.allPairsLength }</h2>
       </main>
     </div>
   )
 }
 
 export async function getServerSideProps(context) {
+  const _network = "homestead"
+  const uniswap = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
+  const _provider = new ethers.getDefaultProvider(_network, {
+    infura: 'project id'
+  })
+  const uniContract = new ethers.Contract(uniswap, IUniswapV2Factory.abi, _provider)
+  const allPairsLength = ethers.BigNumber.from(await uniContract.allPairsLength()).toNumber()
+
   // const chainId = ChainId.MAINNET
   const tokenAddress = '0x6B175474E89094C44Da98b954EedeAC495271d0F'
 
@@ -64,6 +74,7 @@ export async function getServerSideProps(context) {
       name,
       symbol,
       totalSupply,
+      allPairsLength,
     }
   }
 }
