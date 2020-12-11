@@ -7,11 +7,11 @@ async function main() {
 
   // Set up an ethers contract, representing our deployed Box instance
   const address = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-  const factory = await ethers.getContractFactory("AtomicHabitToken");
+  const factory = await ethers.getContractFactory("AtomicHabitsToken");
   const token = await factory.attach(address);
 
   const name = await token.name();
-  console.log("Token value is", value.toString());
+  console.log("Token name is", name);
 }
   
   main()
