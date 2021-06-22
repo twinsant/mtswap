@@ -24,4 +24,4 @@ for i in range(1, 10):
     decimals1 = token1.decimals()
 
     reserves = pair_contract.getReserves()
-    print(allPairs_address, symbol0, symbol1, reserves, decimals0, decimals1)
+    print('{} {:<5} {:<5} {} {} {}'.format(allPairs_address, symbol0, symbol1, reserves, decimals0, decimals1))
