@@ -24,7 +24,8 @@ class DeFiContract():
         return ret
 
     def __init__(self, contract_address, abi_name):
-        with open('IUniswapV2{}.json'.format(abi_name)) as f:
+        fn = os.path.join(os.path.dirname(__file__), 'IUniswapV2{}.json'.format(abi_name))
+        with open(fn) as f:
             c = f.read()
         self.abi = json.loads(c)['abi']
         self.contract = self.web3.eth.contract(address=contract_address, abi=self.abi)
