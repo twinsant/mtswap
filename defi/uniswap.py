@@ -47,6 +47,8 @@ for i in range(syncedPairs + 1, allPairsLength):
         symbol1 = 'ERROR'
     try:
         decimals1 = token1.decimals()
+    except web3.exceptions.ContractLogicError:
+        decimals1 = 18
     except web3.exceptions.BadFunctionCallOutput:
         decimals1 = 18
 
