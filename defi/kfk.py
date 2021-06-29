@@ -10,7 +10,7 @@ class KafkaDB:
     def __init__(self):
         servers = '127.0.0.1:9092'
         self.producer = KafkaProducer(bootstrap_servers=servers, value_serializer=lambda v: json.dumps(v).encode('utf-8'))
-        self.consumer = KafkaConsumer(bootstrap_servers=servers, value_deserializer=json.loads)
+        self.consumer = KafkaConsumer(bootstrap_servers=servers, value_deserializer=json.loads, group_id='kfk')
         self.db = InfluxDB()
 
     def save(self, doc):
