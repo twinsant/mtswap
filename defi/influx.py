@@ -1,12 +1,16 @@
 # influx.py
 import time
 from datetime import datetime
+import concurrent
 
 from helper import DeFiContract
 from web3 import Web3
+from web3 import exceptions
 from kfk import KafkaDB
+from database import MongoDB
 
-db = KafkaDB()
+k = KafkaDB()
+m = MongoDB()
 
 def scrapReserves(pair_address):
     pair=Web3.toChecksumAddress(pair_address)
@@ -28,12 +32,30 @@ def scrapReserves(pair_address):
         'r1': r1,
         't': datetime.utcnow().timestamp(),
     }
-    db.save(doc)
+    return doc
 
 def get_decimal(address):
     token = DeFiContract(address, 'ERC20')
-    return token.decimals()
+    decimal = 18
+    try:
+        decimal = token.decimals()
+    except exceptions.ContractLogicError:
+        pass
+    except exceptions.BadFunctionCallOutput:
+        pass
+    return decimal
 
 while True:
-    scrapReserves('0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852')
+    all_pairs = m.get_all_pairs()
+
+    now = datetime.now().timestamp()
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for pair in all_pairs:
+            futures.append(executor.submit(scrapReserves, pair))
+        for future in concurrent.futures.as_completed(futures):
+            doc = future.result()
+            k.save(doc)
+    elapsed = datetime.now().timestamp() - now
+    print('Sleeping after {}s...'.format(elapsed))
     time.sleep(60)
