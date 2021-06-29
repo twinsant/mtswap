@@ -9,6 +9,11 @@ class MongoDB:
         self.client = MongoClient()
         self.db = self.client.uniswap
 
+    def get_all_pairs(self):
+        pairs = self.db.pairs
+        docs = pairs.find()
+        return [doc['address'] for doc in docs]
+
     def getSyncedPairs(self):
         max_idx = 0
         pairs = self.db.pairs
