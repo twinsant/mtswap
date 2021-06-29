@@ -1,7 +1,4 @@
 #tsdb.py
-from datetime import datetime
-from datetime import datetime
-
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
@@ -21,6 +18,6 @@ class InfluxDB:
             .tag("address", doc['address'])\
             .field("r0", doc['r0'])\
             .field("r1", doc['r1'])\
-            .time(datetime.utcnow(), WritePrecision.S)
+            .time(doc['t'], WritePrecision.S)
 
         write_api.write(bucket, org, point)
