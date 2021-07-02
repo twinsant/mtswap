@@ -12,7 +12,7 @@ class ContractCall():
 
 class DeFiContract():
     infura_url = 'https://mainnet.infura.io/v3/%s' % os.getenv('INFURA_PROJECT_ID', 'YOUR_INFURA_PROJECT_ID')
-    web3 = Web3(Web3.HTTPProvider(infura_url))
+    web3 = Web3(Web3.HTTPProvider('http://172.16.0.155:9545'))
 
 
     def __getattr__(self, name):
