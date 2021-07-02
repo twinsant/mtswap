@@ -38,9 +38,25 @@ if __name__ == '__main__':
                 })
             except exceptions.ContractLogicError:
                 t = DeFiContract(token, 'ERC20Fixed2')
-                name = t.getName()
-                symbol = t.getSymbol()
+                if token == '0x1f0d3048b3D49DE0ed6169A443dBB049e6DaA6CE':
+                    name = 'BET99'
+                    symbol = 'BET99'
+                else:
+                    name = t.getName()
+                    symbol = t.getSymbol()
                 decimals = 18
+                print('{} {}({}) {}'.format(token, name, symbol, decimals))
+                db.save_token({
+                    'address': token,
+                    'name': name,
+                    'symbol': symbol,
+                    'decimals': decimals,
+                })
+            except exceptions.BadFunctionCallOutput:
+                if token == '0xE0B7927c4aF23765Cb51314A0E0521A9645F0E2A':
+                    name = 'DigixDAO'
+                    symbol = 'DGD'
+                decimals = 9
                 print('{} {}({}) {}'.format(token, name, symbol, decimals))
                 db.save_token({
                     'address': token,
