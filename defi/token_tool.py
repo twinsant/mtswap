@@ -1,4 +1,6 @@
 import concurrent.futures
+import sys
+import traceback
 
 from database import MongoDB
 from helper import DeFiContract
@@ -17,32 +19,16 @@ def parse_token(token):
         symbol = t.symbol().decode('utf-8')
         decimals = t.decimals()
     except exceptions.ContractLogicError:
-        if token in [
-            '0x842022dA959FB6944c144d02A9Cc7B7DBbe478F2',
-            '0xdF58FB6AecE6f49ec1168a8DBB58B2a38E97E878',
-            ]:
-            return None
-        print(token)
-        t = DeFiContract(token, 'ERC20Fixed2')
-        if token == '0x1f0d3048b3D49DE0ed6169A443dBB049e6DaA6CE':
-            name = 'BET99'
-            symbol = 'BET99'
-        elif token in [
-            '0xEB9951021698B42e4399f9cBb6267Aa35F82D59D',
-            '0x38c6A68304cdEfb9BEc48BbFaABA5C5B47818bb2',
-            ]:
-            t = DeFiContract(token, 'ERC20Fixed3')
-            name = t.NAME()
-            symbol = t.SYMBOL()
-        else:
-            name = t.getName()
-            symbol = t.getSymbol()
+        name = 'ContractLogicError'
+        symbol = 'ERR'
         decimals = 18
     except exceptions.BadFunctionCallOutput:
-        if token == '0xE0B7927c4aF23765Cb51314A0E0521A9645F0E2A':
-            name = 'DigixDAO'
-            symbol = 'DGD'
-        decimals = 9
+        name = 'BadFunctionCallOutput'
+        symbol = 'ERR'
+        decimals = 18
+    except Exception as e:
+        traceback.print_exc()
+        sys.exit(-1)
     print('{} {}({}) {}'.format(token, name, symbol, decimals))
     doc = {
         'address': token,
@@ -59,6 +45,8 @@ if __name__ == '__main__':
     for token in tokens:
         if db.get_token(token) is None:
             parse_tokens.append(token)
+            # if len(parse_tokens) == 6:
+            #     break
     print(len(parse_tokens))
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -67,5 +55,6 @@ if __name__ == '__main__':
             futures.append(executor.submit(parse_token, token))
         for future in concurrent.futures.as_completed(futures):
             doc = future.result()
+            print(doc)
             if doc:
                 db.save_token(doc)
