@@ -41,6 +41,10 @@ if __name__ == '__main__':
                 if token == '0x1f0d3048b3D49DE0ed6169A443dBB049e6DaA6CE':
                     name = 'BET99'
                     symbol = 'BET99'
+                elif token == '0xEB9951021698B42e4399f9cBb6267Aa35F82D59D':
+                    t = DeFiContract(token, 'ERC20Fixed3')
+                    name = t.NAME()
+                    symbol = t.SYMBOL()
                 else:
                     name = t.getName()
                     symbol = t.getSymbol()
