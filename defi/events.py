@@ -15,7 +15,7 @@ async def log_loop(event_filter, poll_interval):
         await asyncio.sleep(poll_interval)
 
 def main():
-    event_filter = contract.events.PairCreated.createFilter(fromBlock='latest')
+    event_filter = contract.contract.events.PairCreated.createFilter(fromBlock='latest')
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(

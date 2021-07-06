@@ -2,9 +2,6 @@ from database import MongoDB
 from helper import DeFiContract
 from web3 import exceptions
 
-def normalize_text(str):
-    return w3.toText(str) if str.find("0x") > -1 else str
-
 if __name__ == '__main__':
     db = MongoDB()
     tokens = db.get_all_tokens()
@@ -37,11 +34,17 @@ if __name__ == '__main__':
                     'decimals': decimals,
                 })
             except exceptions.ContractLogicError:
+                if token == '0x842022dA959FB6944c144d02A9Cc7B7DBbe478F2':
+                    continue
+                print(token)
                 t = DeFiContract(token, 'ERC20Fixed2')
                 if token == '0x1f0d3048b3D49DE0ed6169A443dBB049e6DaA6CE':
                     name = 'BET99'
                     symbol = 'BET99'
-                elif token == '0xEB9951021698B42e4399f9cBb6267Aa35F82D59D':
+                elif token in [
+                    '0xEB9951021698B42e4399f9cBb6267Aa35F82D59D',
+                    '0x38c6A68304cdEfb9BEc48BbFaABA5C5B47818bb2',
+                    ]:
                     t = DeFiContract(token, 'ERC20Fixed3')
                     name = t.NAME()
                     symbol = t.SYMBOL()
