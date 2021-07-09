@@ -3,8 +3,8 @@ import asyncio
 from helper import DeFiContract
 from database import MongoDB
 
-def handle_event(address, event):
-    print(address, Web3.toJSON(event))
+def handle_event(event):
+    print(Web3.toJSON(event))
 
 async def log_loop(address, poll_interval):
     contract = DeFiContract(address, 'Pair')
@@ -12,8 +12,12 @@ async def log_loop(address, poll_interval):
     print('Working at {}...'.format(address))
 
     while True:
-        for swap in event_filter.get_new_entries():
-            handle_event(address, swap)
+        try:
+            print('-> ', address)
+            for swap in event_filter.get_new_entries():
+                handle_event(swap)
+        except ValueError:
+            print('ERR: {}'.format(address))
         await asyncio.sleep(poll_interval)
 
 def main():
