@@ -1,27 +1,37 @@
 from web3 import Web3
 import asyncio
 from helper import DeFiContract
+from database import MongoDB
 
-UNISWAP_ADDRESS = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
-contract = DeFiContract(UNISWAP_ADDRESS, 'Factory')
+def handle_event(address, event):
+    print(address, Web3.toJSON(event))
 
-def handle_event(event):
-    print(Web3.toJSON(event))
+async def log_loop(address, poll_interval):
+    contract = DeFiContract(address, 'Pair')
+    event_filter = contract.contract.events.Swap.createFilter(fromBlock='latest')
+    print('Working at {}...'.format(address))
 
-async def log_loop(event_filter, poll_interval):
     while True:
-        for PairCreated in event_filter.get_new_entries():
-            handle_event(PairCreated)
+        for swap in event_filter.get_new_entries():
+            handle_event(address, swap)
         await asyncio.sleep(poll_interval)
 
 def main():
-    event_filter = contract.contract.events.PairCreated.createFilter(fromBlock='latest')
+    m = MongoDB()
+    tasks = []
+
+    all_pairs = m.get_all_pairs()
+
+    for address in all_pairs[:10000]:
+        pair=Web3.toChecksumAddress(address)
+        task = log_loop(pair, 60)
+        tasks.append(task)
+    print('{} Starting...'.format(len(tasks)))
+
     loop = asyncio.get_event_loop()
     try:
         loop.run_until_complete(
-            asyncio.gather(
-                log_loop(event_filter, 2)
-            )
+            asyncio.gather(*tasks)
         )
     finally:
         loop.close()
