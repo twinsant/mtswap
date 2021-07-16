@@ -5,9 +5,9 @@ from pymongo import MongoClient
 from pymongo import ASCENDING
 
 class MongoDB:
-    def __init__(self):
+    def __init__(self, db_name='uniswap'):
         self.client = MongoClient()
-        self.db = self.client.uniswap
+        self.db = self.client[db_name]
 
     def get_all_pairs(self):
         pairs = self.db.pairs

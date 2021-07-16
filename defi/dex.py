@@ -4,21 +4,23 @@ import web3
 
 
 UNISWAP_ADDRESS = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
-factory_contract = DeFiContract(UNISWAP_ADDRESS, 'Factory')
+# https://docs.pancakeswap.finance/code/smart-contracts
+PANCAKESWAP = '0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73'
+factory_contract = DeFiContract(PANCAKESWAP, 'Factory', chain='bsc')
 
 
 #returns a count of all the trading pairs on uniswap
 allPairsLength = factory_contract.allPairsLength()
 
-db = MongoDB()
+db = MongoDB('bsc')
 syncedPairs = db.getSyncedPairs()
 
 for i in range(syncedPairs + 1, allPairsLength):
     allPairs_address = factory_contract.allPairs(i)
-    pair_contract = DeFiContract(allPairs_address, 'Pair')
+    pair_contract = DeFiContract(allPairs_address, 'Pair', chain='bsc')
 
     token0_address = pair_contract.token0()
-    token0 = DeFiContract(token0_address, 'ERC20')
+    token0 = DeFiContract(token0_address, 'ERC20', chain='bsc')
     try:
         symbol0 = token0.symbol()
     except OverflowError:
@@ -36,7 +38,7 @@ for i in range(syncedPairs + 1, allPairsLength):
         decimals0 = 18
 
     token1_address = pair_contract.token1()
-    token1 = DeFiContract(token1_address, 'ERC20')
+    token1 = DeFiContract(token1_address, 'ERC20', chain='bsc')
     try:
         symbol1 = token1.symbol()
     except OverflowError:

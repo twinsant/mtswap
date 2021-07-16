@@ -23,7 +23,9 @@ class DeFiContract():
                 ret = ContractCall(method_to_call)
         return ret
 
-    def __init__(self, contract_address, abi_name):
+    def __init__(self, contract_address, abi_name, chain='eth'):
+        if chain == 'bsc':
+            self.web3 = Web3(Web3.HTTPProvider('https://bsc-dataseed1.binance.org:443'))
         fn = os.path.join(os.path.dirname(__file__), 'IUniswapV2{}.json'.format(abi_name))
         with open(fn) as f:
             c = f.read()

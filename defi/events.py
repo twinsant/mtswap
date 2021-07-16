@@ -26,7 +26,7 @@ def main():
 
     all_pairs = m.get_all_pairs()
 
-    for address in all_pairs[:1000]:
+    for address in all_pairs[:100]:
         pair=Web3.toChecksumAddress(address)
         task = log_loop(pair, 60)
         tasks.append(task)
